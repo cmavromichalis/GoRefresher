@@ -32,11 +32,14 @@ func Encrypt(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	fmt.Fprint(w, cipher)
 }
 
-func main() {
-
+func App() http.Handler {
 	router := httprouter.New()
 	router.GET("/encrypt/:word/:rotate", Encrypt)
 	router.GET("/decrypt/:word/:rotate", Decrypt)
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	return router
+}
+
+func main() {
+	log.Fatal(http.ListenAndServe(":8080", App()))
 }
