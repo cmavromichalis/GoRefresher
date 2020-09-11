@@ -1,20 +1,30 @@
 package main
 
 import (
-	"net/http/httptest"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"strings"
 	"testing"
 )
 
 func TestWebEncrypt(t *testing.T) {
-	testServer := httptest.NewServer(App())
-	defer testServer.Close()
+	go func() {
+		log.Fatal(http.ListenAndServe(":8080", App()))
+	}()
 
-	testServer.URL
-
-	print(rr.Body.String())
-
-	if rr.Body.String() != "BCD" {
-		t.Error("Web Encrypt failed")
+	res, err := http.Get("http://localhost:8080/encrypt/mock/ABC/1/")
+	if err != nil {
+		t.Error(err)
 	}
 
+	defer res.Body.Close()
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if !strings.Contains(string(body), "ABC") {
+		t.Error("Web Encrypt did not return as expected")
+	}
 }

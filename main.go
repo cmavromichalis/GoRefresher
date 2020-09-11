@@ -21,7 +21,14 @@ func Decrypt(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 }
 
 func Encrypt(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	caesar := CaesarCipher{}
+	var caesar Cipher
+
+	if ps.ByName("cipher") == "caesar" {
+		caesar = CaesarCipher{}
+	} else {
+		caesar = MockCaesarCipher{}
+	}
+
 	cipher, err := caesar.encode(ps.ByName("word"), (ps.ByName("rotate")))
 
 	if err != nil {
@@ -34,8 +41,8 @@ func Encrypt(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 func App() http.Handler {
 	router := httprouter.New()
-	router.GET("/encrypt/:word/:rotate", Encrypt)
-	router.GET("/decrypt/:word/:rotate", Decrypt)
+	router.GET("/encrypt/:cipher/:word/:rotate", Encrypt)
+	router.GET("/decrypt/:cipher/:word/:rotate", Decrypt)
 
 	return router
 }
