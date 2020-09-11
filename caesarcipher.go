@@ -40,7 +40,11 @@ func (cc CaesarCipher) calculate(word string, rotateString string, increment boo
 			if increment {
 				cipherBuilder.WriteString(string(alphabet[(position+rotate)%26]))
 			} else {
-				cipherBuilder.WriteString(string(alphabet[(position-rotate)%26]))
+				if (position - rotate) == -1 {
+					cipherBuilder.WriteString(string(alphabet[25]))
+				} else {
+					cipherBuilder.WriteString(string(alphabet[(position-rotate)%26]))
+				}
 			}
 		}
 	}
